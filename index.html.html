@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบงานออนไลน์: ภารกิจนักคิด ป.5</title>
+    <!-- โหลด Tailwind CSS สำหรับตกแต่งหน้าเว็บให้สวยงามและรองรับทุกหน้าจอ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- โหลดฟอนต์ภาษาไทยที่น่ารักและอ่านง่าย (Mali และ Prompt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- โหลด Font Awesome สำหรับไอคอนน่ารักๆ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'mali': ['"Mali"', 'cursive'],
+                        'prompt': ['"Prompt"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-sky-200 via-amber-100 to-pink-200 min-h-screen font-prompt text-slate-700 pb-16 selection:bg-amber-300 selection:text-amber-900">
+
+    <!-- ส่วนหัวของใบงาน (Header) -->
+    <header class="bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-white shadow-xl rounded-b-[2.5rem] px-5 py-8 mb-8 relative overflow-hidden border-b-4 border-white/40">
+        <!-- ของตกแต่งพื้นหลังแบบวงกลมและไอคอนลอยตัว -->
+        <div class="absolute -top-8 -left-8 w-32 h-32 bg-white/20 rounded-full blur-xs"></div>
+        <div class="absolute -bottom-10 -right-6 w-40 h-40 bg-yellow-300/25 rounded-full blur-xs"></div>
+        <div class="hidden sm:flex absolute top-6 left-10 text-white/30 text-4xl animate-float">
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <div class="hidden sm:flex absolute bottom-6 right-12 text-white/30 text-4xl animate-float" style="animation-delay: 1.5s;">
+            <i class="fa-solid fa-puzzle-piece"></i>
+        </div>
+        
+        <div class="max-w-3xl mx-auto text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/25 backdrop-blur-md px-5 py-2 rounded-full text-sm sm:text-base font-semibold mb-4 shadow-sm border border-white/30">
+                <i class="fa-solid fa-rocket text-yellow-200 animate-bounce"></i>
+                <span>วิชาวิทยาการคำนวณ • ชั้นประถมศึกษาปีที่ 5</span>
+            </div>
+            <h1 class="font-mali text-3xl sm:text-4xl md:text-5xl font-bold drop-shadow-md leading-tight tracking-wide">
+            <!-- ปุ่มเปิดโหมดคุณครูสำหรับตรวจงาน และปุ่มแชร์ใบงานให้เด็กๆ -->
+            <div class="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+                <button type="button" onclick="openShareModal()" 
+                    class="inline-flex items-center gap-2 bg-white text-orange-600 hover:bg-amber-50 text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-md transition cursor-pointer">
+                    <i class="fa-solid fa-share-nodes text-pink-500"></i>
+                    <span>แชร์ใบงาน (ลิงก์ / QR Code)</span>
+                </button>
+                <button type="button" onclick="openTeacherDashboard()" 
+                    class="inline-flex items-center gap-2 bg-slate-900/35 hover:bg-slate-900/55 text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-full border border-white/30 backdrop-blur-xs transition cursor-pointer">
+                    <i class="fa-solid fa-chalkboard-user text-yellow-300"></i>
+                    <span>มุมคุณครู: ตรวจคำตอบ (<span id="submissionCount">0</span>)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- เนื้อหาหลักของใบงาน -->
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 space-y-8">
+
+        <!-- กล่องกรอกข้อมูลนักเรียน -->
+        <section class="bg-white/95 backdrop-blur-xs rounded-[2rem] p-6 sm:p-8 shadow-lg shadow-sky-200/60 border-4 border-sky-300 relative">
+            <div class="flex items-center gap-3 mb-5 text-sky-600 font-mali font-bold text-xl">
+                <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-500 flex items-center justify-center shadow-xs">
+                    <i class="fa-solid fa-id-card text-xl"></i>
+                </div>
+                <h2>ข้อมูลนักสืบตัวน้อย</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="sm:col-span-2">
+                    <label for="studentName" class="block text-sm font-semibold text-slate-600 mb-2 ml-1">ชื่อ - นามสกุล <span class="text-rose-500">*</span></label>
+                    <input type="text" id="studentName" placeholder="พิมพ์ชื่อ-นามสกุลของหนู..." 
+                        class="w-full px-4 py-3.5 rounded-2xl border-2 border-sky-200 bg-sky-50/60 focus:bg-white focus:border-sky-400 focus:ring-4 focus:ring-sky-100 focus:outline-none transition text-base">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="studentClass" class="block text-sm font-semibold text-slate-600 mb-2 ml-1">ห้อง</label>
+                        <input type="text" id="studentClass" placeholder="ป.5/..." 
+                            class="w-full px-3 py-3.5 rounded-2xl border-2 border-sky-200 bg-sky-50/60 focus:bg-white focus:border-sky-400 focus:ring-4 focus:ring-sky-100 focus:outline-none transition text-base text-center">
+                    </div>
+                    <div>
+                        <label for="studentNo" class="block text-sm font-semibold text-slate-600 mb-2 ml-1">เลขที่</label>
+                        <input type="number" id="studentNo" placeholder="เลขที่" 
+                            class="w-full px-3 py-3.5 rounded-2xl border-2 border-sky-200 bg-sky-50/60 focus:bg-white focus:border-sky-400 focus:ring-4 focus:ring-sky-100 focus:outline-none transition text-base text-center">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- คำชี้แจง -->
+        <section class="bg-gradient-to-r from-amber-100 to-yellow-100 border-2 border-dashed border-amber-400 rounded-[2rem] p-5 sm:p-6 flex items-start gap-4 shadow-sm">
+            <div class="bg-gradient-to-br from-amber-400 to-orange-400 text-white w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 mt-0.5 shadow-md">
+                <i class="fa-solid fa-lightbulb text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-mali font-bold text-amber-800 text-lg sm:text-xl">คำชี้แจงภารกิจ</h3>
+                <p class="text-sm sm:text-base text-amber-900/90 mt-1.5 leading-relaxed">
+                    ให้นักเรียนอ่านสถานการณ์ทั้ง 3 ข้อด้านล่าง แล้วช่วยกัน<strong>เขียนเรียงลำดับขั้นตอนการแก้ปัญหา</strong> ลงในช่องว่างให้ถูกต้อง เข้าใจง่าย และเป็นลำดับขั้นนะจ๊ะ
+                </p>
+            </div>
+        </section>
+
+        <!-- คำถามข้อที่ 1 -->
+        <article class="bg-white/95 backdrop-blur-xs rounded-[2rem] p-6 sm:p-8 shadow-lg shadow-emerald-200/50 border-4 border-emerald-300 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-mali font-bold px-5 py-2 rounded-2xl text-base sm:text-lg shadow-sm">
+                    ภารกิจที่ 1 🎒
+                </span>
+                <span class="text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-100 px-4 py-1.5 rounded-full">
+                    เรื่อง: จัดกระเป๋าไปโรงเรียน
+                </span>
+            </div>
+            
+            <div class="bg-emerald-50/90 rounded-2xl p-5 mb-5 border-2 border-emerald-100">
+                <p class="text-slate-700 text-base sm:text-lg leading-relaxed">
+                    <strong class="text-emerald-700">สถานการณ์:</strong> พรุ่งนี้เช้า "น้องข้าวหอม" ต้องไปโรงเรียนแต่เช้าตรู่ แต่ตอนนี้หนังสือเรียน สมุด และกล่องดินสอยังวางกระจัดกระจายอยู่บนโต๊ะเต็มไปหมด ให้นักเรียนช่วยเขียนขั้นตอนการจัดกระเป๋านักเรียนให้เป็นระเบียบและครบถ้วนตามตารางเรียนหน่อยจ้า
+                </p>
+            </div>
+
+            <div>
+                <label for="answer1" class="block font-mali font-bold text-emerald-700 mb-2.5 text-base sm:text-lg">
+                    <i class="fa-solid fa-pencil mr-1.5"></i> พิมพ์ลำดับขั้นตอนของหนูที่นี่:
+                </label>
+                <textarea id="answer1" rows="4" 
+                    placeholder="ตัวอย่าง:&#10;ขั้นที่ 1 ดูตารางเรียนของวันพรุ่งนี้&#10;ขั้นที่ 2 ...&#10;ขั้นที่ 3 ..."
+                    class="w-full p-4 sm:p-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 focus:bg-white focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 focus:outline-none transition text-base leading-relaxed resize-y"></textarea>
+            </div>
+        </article>
+
+        <!-- คำถามข้อที่ 2 -->
+        <article class="bg-white/95 backdrop-blur-xs rounded-[2rem] p-6 sm:p-8 shadow-lg shadow-purple-200/50 border-4 border-purple-300 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <span class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-mali font-bold px-5 py-2 rounded-2xl text-base sm:text-lg shadow-sm">
+                    ภารกิจที่ 2 🥪
+                </span>
+                <span class="text-xs sm:text-sm font-semibold text-purple-700 bg-purple-100 px-4 py-1.5 rounded-full">
+                    เรื่อง: ทำแซนด์วิชทูน่าแสนอร่อย
+                </span>
+            </div>
+            
+            <div class="bg-purple-50/90 rounded-2xl p-5 mb-5 border-2 border-purple-100">
+                <p class="text-slate-700 text-base sm:text-lg leading-relaxed">
+                    <strong class="text-purple-700">สถานการณ์:</strong> วันหยุดเสาร์-อาทิตย์ "น้องต้นกล้า" อยากทำแซนด์วิชทูน่าให้คุณแม่ทาน โดยมีวัตถุดิบวางอยู่บนโต๊ะ ได้แก่ ขนมปังแผ่น ทูน่ากระป๋อง มายองเนส ผักสลัด และจาน ให้นักเรียนช่วยเรียงลำดับขั้นตอนการทำแซนด์วิชตั้งแต่เริ่มต้นจนพร้อมเสิร์ฟให้ถูกต้อง
+                </p>
+            </div>
+
+            <div>
+                <label for="answer2" class="block font-mali font-bold text-purple-700 mb-2.5 text-base sm:text-lg">
+                    <i class="fa-solid fa-pencil mr-1.5"></i> พิมพ์ลำดับขั้นตอนของหนูที่นี่:
+                </label>
+                <textarea id="answer2" rows="4" 
+                    placeholder="เขียนเป็นข้อๆ เช่น&#10;1. ...&#10;2. ...&#10;3. ..."
+                    class="w-full p-4 sm:p-5 rounded-2xl border-2 border-purple-200 bg-purple-50/40 focus:bg-white focus:border-purple-400 focus:ring-4 focus:ring-purple-100 focus:outline-none transition text-base leading-relaxed resize-y"></textarea>
+            </div>
+        </article>
+
+        <!-- คำถามข้อที่ 3 -->
+        <article class="bg-white/95 backdrop-blur-xs rounded-[2rem] p-6 sm:p-8 shadow-lg shadow-pink-200/50 border-4 border-pink-300 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <span class="bg-gradient-to-r from-pink-500 to-rose-500 text-white font-mali font-bold px-5 py-2 rounded-2xl text-base sm:text-lg shadow-sm">
+                    ภารกิจที่ 3 🌱
+                </span>
+                <span class="text-xs sm:text-sm font-semibold text-pink-700 bg-pink-100 px-4 py-1.5 rounded-full">
+                    เรื่อง: ปลูกต้นไม้ในกระถาง
+                </span>
+            </div>
+            
+            <div class="bg-pink-50/90 rounded-2xl p-5 mb-5 border-2 border-pink-100">
+                <p class="text-slate-700 text-base sm:text-lg leading-relaxed">
+                    <strong class="text-pink-700">สถานการณ์:</strong> โรงเรียนจัดกิจกรรม "รักษ์โลก" ให้นักเรียนปลูกต้นไม้คนละ 1 ต้น โดยมีอุปกรณ์คือ กระถางต้นไม้ ดินร่วน ต้นกล้าดอกดาวเรือง พลั่วตักดิน และบัวรดน้ำ ให้นักเรียนอธิบายขั้นตอนการปลูกต้นไม้ตั้งแต่เริ่มจนเสร็จสมบูรณ์
+                </p>
+            </div>
+
+            <div>
+                <label for="answer3" class="block font-mali font-bold text-pink-700 mb-2.5 text-base sm:text-lg">
+                    <i class="fa-solid fa-pencil mr-1.5"></i> พิมพ์ลำดับขั้นตอนของหนูที่นี่:
+                </label>
+                <textarea id="answer3" rows="4" 
+                    placeholder="เขียนลำดับขั้นตอนการปลูกต้นไม้ของหนู..."
+                    class="w-full p-4 sm:p-5 rounded-2xl border-2 border-pink-200 bg-pink-50/40 focus:bg-white focus:border-pink-400 focus:ring-4 focus:ring-pink-100 focus:outline-none transition text-base leading-relaxed resize-y"></textarea>
+            </div>
+        </article>
+
+        <!-- กล่องปุ่มดำเนินการ (ส่งคำตอบ / ล้างข้อมูล) -->
+        <section class="bg-white/90 backdrop-blur-xs rounded-[2rem] p-6 sm:p-8 shadow-lg border-4 border-amber-200 text-center space-y-4">
+            <p class="font-mali text-slate-600 text-base sm:text-lg">
+                ✨ ตรวจสอบคำตอบครบทั้ง 3 ภารกิจแล้ว กดปุ่มด้านล่างเพื่อส่งคำตอบได้เลย!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 pt-1">
+                <button type="button" id="submitBtn" onclick="submitWorksheet()" 
+                    class="flex-1 bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:via-teal-600 hover:to-cyan-600 active:scale-95 text-white font-mali font-bold text-xl py-4 px-8 rounded-2xl shadow-xl shadow-teal-200/80 border-b-4 border-teal-700 transition duration-200 flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60">
+                    <i class="fa-solid fa-paper-plane text-2xl"></i>
+                    <span>ส่งคำตอบ</span>
+                </button>
+                
+                <button type="button" onclick="confirmReset()" 
+                    class="bg-rose-50 hover:bg-rose-100 active:scale-95 text-rose-600 border-2 border-rose-200 border-b-4 font-mali font-bold text-base py-4 px-6 rounded-2xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>ล้างคำตอบ</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- กล่องข้อความแจ้งเตือน / สรุปผลการส่งใบงาน (Modal) แทนการใช้ alert() -->
+    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div id="modalBox" class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-4 border-amber-300 transform transition-all max-h-[90vh] overflow-y-auto">
+            <!-- เนื้อหาใน Modal จะถูกสร้างด้วย JavaScript -->
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ตั้งค่าระบบจัดเก็บข้อมูลออนไลน์สำหรับส่งใบงานจริง
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let allSubmissions = []; // เก็บรายการคำตอบทั้งหมดที่นักเรียนส่งเข้ามา
+
+        const inputIds = ['studentName', 'studentClass', 'studentNo', 'answer1', 'answer2', 'answer3'];
+
+        // เริ่มต้นเชื่อมต่อระบบฐานข้อมูลและยืนยันตัวตนก่อนใช้งาน
+        async function initCloudSystem() {
+            if (!firebaseConfig) return;
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                currentUser = auth.currentUser;
+
+                if (currentUser) {
+                    listenToSubmissions();
+                }
+            } catch (error) {
+                console.error("เกิดข้อผิดพลาดในการเชื่อมต่อระบบ:", error);
+            }
+        }
+
+        // ดึงข้อมูลคำตอบที่นักเรียนส่งเข้ามาแบบเรียลไทม์
+        function listenToSubmissions() {
+            if (!db || !currentUser) return;
+            const submissionsRef = collection(db, 'artifacts', appId, 'public', 'data', 'worksheet_submissions');
+            
+            onSnapshot(submissionsRef, (snapshot) => {
+                allSubmissions = [];
+                snapshot.forEach((docSnap) => {
+                    allSubmissions.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                // เรียงลำดับจากส่งล่าสุดขึ้นก่อนในหน่วยความจำ
+                allSubmissions.sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+                
+                const countEl = document.getElementById('submissionCount');
+                if (countEl) countEl.textContent = allSubmissions.length;
+            }, (error) => {
+                console.error("ไม่สามารถโหลดข้อมูลคำตอบได้:", error);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initCloudSystem();
+        });
+
+        // ฟังก์ชันเปิด Modal
+        window.openModal = function(htmlContent, borderColorClass = 'border-amber-300', maxWidthClass = 'max-w-lg') {
+            const overlay = document.getElementById('modalOverlay');
+            const box = document.getElementById('modalBox');
+            const content = document.getElementById('modalContent');
+            
+            box.className = `bg-white rounded-3xl ${maxWidthClass} w-full p-6 shadow-2xl border-4 ${borderColorClass} transform transition-all max-h-[90vh] overflow-y-auto`;
+            content.innerHTML = htmlContent;
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        };
+
+        // ฟังก์ชันปิด Modal
+        window.closeModal = function() {
+            const overlay = document.getElementById('modalOverlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        };
+
+        // ป้องกันการแทรกโค้ด HTML (XSS) เมื่อแสดงข้อความที่นักเรียนพิมพ์
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag]));
+        }
+
+        // ฟังก์ชันตรวจสอบและส่งใบงานขึ้นระบบออนไลน์จริง
+        window.submitWorksheet = async function() {
+            const name = document.getElementById('studentName').value.trim();
+            const sClass = document.getElementById('studentClass').value.trim();
+            const sNo = document.getElementById('studentNo').value.trim();
+            const ans1 = document.getElementById('answer1').value.trim();
+            const ans2 = document.getElementById('answer2').value.trim();
+            const ans3 = document.getElementById('answer3').value.trim();
+
+            // ตรวจสอบว่ากรอกครบหรือยัง
+            let missingItems = [];
+            if (!name) missingItems.push('ชื่อ-นามสกุล');
+            if (!ans1) missingItems.push('คำตอบภารกิจที่ 1');
+            if (!ans2) missingItems.push('คำตอบภารกิจที่ 2');
+            if (!ans3) missingItems.push('คำตอบภารกิจที่ 3');
+
+            if (missingItems.length > 0) {
+                const warningHTML = `
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <h3 class="font-mali font-bold text-xl text-slate-800 mb-2">เอ๊ะ! ยังกรอกข้อมูลไม่ครบนะจ๊ะ</h3>
+                        <p class="text-slate-600 text-sm mb-3">กรุณาตรวจสอบและกรอกข้อมูลในช่องต่อไปนี้ให้ครบก่อนส่งภารกิจ:</p>
+                        <ul class="bg-amber-50 rounded-2xl p-3 text-amber-800 font-medium text-sm mb-5 space-y-1">
+                            ${missingItems.map(item => `<li>• ${item}</li>`).join('')}
+                        </ul>
+                        <button onclick="closeModal()" class="w-full bg-amber-400 hover:bg-amber-500 text-white font-mali font-bold py-3 px-6 rounded-2xl transition cursor-pointer">
+                            กลับไปกรอกให้ครบ
+                        </button>
+                    </div>
+                `;
+                openModal(warningHTML, 'border-amber-300');
+                return;
+            }
+
+            // แสดงสถานะกำลังส่งข้อมูล
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-2xl"></i><span>กำลังส่งคำตอบ...</span>`;
+
+            let savedToCloud = false;
+            try {
+                if (db && currentUser) {
+                    const submissionsRef = collection(db, 'artifacts', appId, 'public', 'data', 'worksheet_submissions');
+                    await addDoc(submissionsRef, {
+                        studentName: name,
+                        studentClass: sClass || '-',
+                        studentNo: sNo || '-',
+                        answer1: ans1,
+                        answer2: ans2,
+                        answer3: ans3,
+                        submittedAt: Date.now(),
+                        submittedTimeText: new Date().toLocaleString('th-TH'),
+                        senderUid: currentUser.uid
+                    });
+                    savedToCloud = true;
+                }
+            } catch (error) {
+                console.error("ส่งข้อมูลออนไลน์ไม่สำเร็จ:", error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHTML;
+            }
+
+            // แสดงสรุปผลงานเมื่อกรอกครบถ้วน
+            const statusBadge = savedToCloud 
+                ? `<div class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full mb-2"><i class="fa-solid fa-cloud-check"></i> บันทึกส่งถึงคุณครูเรียบร้อยแล้ว!</div>`
+                : `<div class="inline-flex items-center gap-1.5 bg-sky-100 text-sky-700 text-xs font-semibold px-3 py-1 rounded-full mb-2"><i class="fa-solid fa-mobile-screen"></i> แคปหน้าจอหรือคัดลอกส่งคุณครูได้เลย</div>`;
+
+            const summaryHTML = `
+                <div>
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2 text-3xl animate-bounce">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        ${statusBadge}
+                        <h3 class="font-mali font-bold text-2xl text-emerald-600">พิชิตภารกิจสำเร็จ! 🎉</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">ระบบส่งคำตอบของหนูเรียบร้อยแล้ว หรือสามารถคัดลอกสำรองไว้ได้จ้า</p>
+                    </div>
+
+                    <div id="summaryCardText" class="bg-slate-50 rounded-2xl p-4 border-2 border-slate-200 text-sm space-y-3 mb-4">
+                        <div class="border-b border-slate-200 pb-2">
+                            <p class="font-bold text-sky-700">👩‍🎓 ชื่อ: ${escapeHTML(name)} ${sClass ? `| ห้อง: ${escapeHTML(sClass)}` : ''} ${sNo ? `| เลขที่: ${escapeHTML(sNo)}` : ''}</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-emerald-600">🎒 ภารกิจที่ 1 (จัดกระเป๋า):</p>
+                            <p class="text-slate-700 whitespace-pre-line pl-2 mt-0.5">${escapeHTML(ans1)}</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-purple-600">🥪 ภารกิจที่ 2 (ทำแซนด์วิช):</p>
+                            <p class="text-slate-700 whitespace-pre-line pl-2 mt-0.5">${escapeHTML(ans2)}</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-pink-600">🌱 ภารกิจที่ 3 (ปลูกต้นไม้):</p>
+                            <p class="text-slate-700 whitespace-pre-line pl-2 mt-0.5">${escapeHTML(ans3)}</p>
+                        </div>
+                    </div>
+
+                    <div id="copyFeedback" class="hidden text-center text-xs font-medium text-emerald-600 bg-emerald-50 py-1.5 rounded-xl mb-3">
+                        <i class="fa-solid fa-check-circle"></i> คัดลอกคำตอบทั้งหมดเรียบร้อยแล้ว! นำไปวางส่งในแชทได้เลย
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <button onclick="copySummary()" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white font-mali font-bold py-3 px-4 rounded-2xl transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>คัดลอกคำตอบสำรอง</span>
+                        </button>
+                        <button onclick="closeModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-mali font-bold py-3 px-5 rounded-2xl transition cursor-pointer">
+                            ปิดหน้าต่าง
+                        </button>
+                    </div>
+                </div>
+            `;
+            openModal(summaryHTML, 'border-emerald-300');
+        };
+
+        // ฟังก์ชันเปิดหน้าตรวจงานสำหรับคุณครู
+        window.openTeacherDashboard = function() {
+            const listHTML = allSubmissions.length === 0 
+                ? `<div class="text-center py-10 text-slate-400">
+                        <i class="fa-solid fa-inbox text-4xl mb-3"></i>
+                        <p class="font-mali text-lg">ยังไม่มีนักเรียนส่งคำตอบเข้ามาในขณะนี้</p>
+                        <p class="text-xs mt-1">เมื่อนักเรียนกดปุ่ม "ส่งคำตอบ" ข้อมูลจะมาแสดงที่นี่ทันที</p>
+                   </div>`
+                : `<div class="space-y-4 max-h-[55vh] overflow-y-auto pr-1">
+                    ${allSubmissions.map((item, idx) => `
+                        <div class="bg-slate-50 rounded-2xl p-4 border-2 border-slate-200 text-sm relative">
+                            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2 mb-3">
+                                <div>
+                                    <span class="bg-sky-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full mr-1">#${allSubmissions.length - idx}</span>
+                                    <strong class="text-slate-800 text-base">${escapeHTML(item.studentName)}</strong>
+                                    <span class="text-slate-500 text-xs ml-1">(ห้อง ${escapeHTML(item.studentClass)} เลขที่ ${escapeHTML(item.studentNo)})</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-slate-400"><i class="fa-regular fa-clock"></i> ${escapeHTML(item.submittedTimeText || '')}</span>
+                                    <button onclick="deleteSubmission('${item.id}')" title="ลบรายการนี้" class="text-rose-400 hover:text-rose-600 p-1 cursor-pointer">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-2.5 text-slate-700">
+                                <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                                    <p class="font-bold text-emerald-600 text-xs mb-0.5">🎒 ภารกิจที่ 1 (จัดกระเป๋า):</p>
+                                    <p class="whitespace-pre-line">${escapeHTML(item.answer1)}</p>
+                                </div>
+                                <div class="bg-white p-2.5 rounded-xl border border-purple-100">
+                                    <p class="font-bold text-purple-600 text-xs mb-0.5">🥪 ภารกิจที่ 2 (ทำแซนด์วิช):</p>
+                                    <p class="whitespace-pre-line">${escapeHTML(item.answer2)}</p>
+                                </div>
+                                <div class="bg-white p-2.5 rounded-xl border border-pink-100">
+                                    <p class="font-bold text-pink-600 text-xs mb-0.5">🌱 ภารกิจที่ 3 (ปลูกต้นไม้):</p>
+                                    <p class="whitespace-pre-line">${escapeHTML(item.answer3)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                   </div>`;
+
+            const dashboardHTML = `
+                <div>
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-chalkboard-user"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-mali font-bold text-xl text-slate-800">มุมคุณครู: ตรวจคำตอบนักเรียน</h3>
+                                <p class="text-xs text-slate-500">ส่งแล้วทั้งหมด ${allSubmissions.length} คน (อัปเดตอัตโนมัติ)</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl p-2 cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    ${listHTML}
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                        <button onclick="exportToCSV()" ${allSubmissions.length === 0 ? 'disabled' : ''} 
+                            class="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-40 text-white font-mali font-bold py-2.5 px-4 rounded-2xl transition flex items-center gap-2 text-sm cursor-pointer">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>ส่งออกเป็น Excel (CSV)</span>
+                        </button>
+                        <button onclick="closeModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-mali font-bold py-2.5 px-6 rounded-2xl transition text-sm cursor-pointer">
+                            ปิดหน้าต่าง
+                        </button>
+                    </div>
+                </div>
+            `;
+            openModal(dashboardHTML, 'border-sky-300', 'max-w-2xl');
+        };
+
+        // ฟังก์ชันเปิดหน้าต่างแชร์ใบงาน (Expose ลิงก์ + QR Code + ดาวน์โหลดไฟล์ HTML)
+        window.openShareModal = function() {
+            const currentUrl = window.location.href;
+            const isPreviewEnv = currentUrl.startsWith('blob:') || currentUrl.startsWith('about:') || currentUrl.includes('scf.usercontent');
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}`;
+
+            const shareHTML = `
+                <div class="text-center">
+                    <div class="w-14 h-14 bg-pink-100 text-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </div>
+                    <h3 class="font-mali font-bold text-xl text-slate-800">แชร์ใบงานให้นักเรียนเข้าทำ</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1 mb-4">ให้นักเรียนสแกน QR Code หรือส่งลิงก์ด้านล่างเข้ากลุ่มไลน์ห้องเรียนได้เลย</p>
+
+                    ${isPreviewEnv ? `
+                        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-left text-xs text-amber-800 mb-4">
+                            <p class="font-bold mb-1"><i class="fa-solid fa-circle-info"></i> คำแนะนำการนำไปเผยแพร่จริง (Expose):</p>
+                            <p>ขณะนี้ใบงานกำลังทำงานในหน้าต่างทดสอบ คุณครูสามารถกดปุ่ม <strong>"ดาวน์โหลดไฟล์เว็บ (.html)"</strong> ด้านล่าง เพื่อนำไปอัปโหลดขึ้น Google Sites, Netlify Drop หรือ GitHub Pages เพื่อให้ได้ลิงก์สาธารณะถาวรได้ทันทีครับ</p>
+                        </div>
+                    ` : ''}
+
+                    <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 inline-block mb-4">
+                        <img src="${qrApiUrl}" alt="QR Code ใบงาน" onerror="this.style.display='none'" class="w-40 h-40 mx-auto rounded-xl bg-white p-2 shadow-xs">
+                        <p class="text-xs text-slate-400 mt-2">สแกนเพื่อเปิดใบงานบนมือถือ</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 bg-slate-100 p-2 rounded-2xl border border-slate-200 mb-3">
+                        <input type="text" id="shareUrlInput" readonly value="${escapeHTML(currentUrl)}" 
+                            class="bg-transparent text-xs text-slate-600 w-full px-2 focus:outline-none">
+                        <button onclick="copyShareUrl()" class="bg-sky-500 hover:bg-sky-600 text-white font-mali font-bold text-xs px-4 py-2.5 rounded-xl shrink-0 transition cursor-pointer">
+                            <i class="fa-solid fa-link"></i> คัดลอกลิงก์
+                        </button>
+                    </div>
+
+                    <div id="shareCopyFeedback" class="hidden text-xs font-semibold text-emerald-600 bg-emerald-50 py-1.5 rounded-xl mb-3">
+                        <i class="fa-solid fa-check-circle"></i> คัดลอกลิงก์ใบงานเรียบร้อยแล้ว!
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                        <button onclick="downloadStandaloneHTML()" class="flex-1 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-mali font-bold py-3 px-4 rounded-2xl text-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-download"></i>
+                            <span>ดาวน์โหลดไฟล์เว็บ (.html)</span>
+                        </button>
+                        <button onclick="closeModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-mali font-bold py-3 px-5 rounded-2xl text-sm transition cursor-pointer">
+                            ปิด
+                        </button>
+                    </div>
+                </div>
+            `;
+            openModal(shareHTML, 'border-pink-300');
+        };
+
+        // คัดลอกลิงก์ใบงาน
+        window.copyShareUrl = function() {
+            const input = document.getElementById('shareUrlInput');
+            if (!input) return;
+            input.select();
+            document.execCommand('copy');
+            const fb = document.getElementById('shareCopyFeedback');
+            if (fb) fb.classList.remove('hidden');
+        };
+
+        // ดาวน์โหลดไฟล์ HTML ไปโฮสต์ภายนอกได้ทันที
+        window.downloadStandaloneHTML = function() {
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ใบงาน_ภารกิจนักคิด_ป5.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        // ส่งออกคำตอบนักเรียนทั้งหมดเป็นไฟล์ CSV เปิดใน Excel ได้
+        window.exportToCSV = function() {
+            if (allSubmissions.length === 0) return;
+            const headers = ['ลำดับ', 'เวลาที่ส่ง', 'ชื่อ-นามสกุล', 'ห้อง', 'เลขที่', 'ภารกิจที่ 1 (จัดกระเป๋า)', 'ภารกิจที่ 2 (ทำแซนด์วิช)', 'ภารกิจที่ 3 (ปลูกต้นไม้)'];
+            const rows = allSubmissions.map((item, idx) => [
+                idx + 1,
+                item.submittedTimeText || '',
+                item.studentName || '',
+                item.studentClass || '',
+                item.studentNo || '',
+                (item.answer1 || '').replace(/\n/g, ' '),
+                (item.answer2 || '').replace(/\n/g, ' '),
+                (item.answer3 || '').replace(/\n/g, ' ')
+            ]);
+
+            // ใส่ BOM (\uFEFF) เพื่อให้ Excel อ่านภาษาไทยได้ไม่เพี้ยน
+            const csvContent = '\uFEFF' + [headers, ...rows]
+                .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+                .join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `คำตอบใบงาน_ภารกิจนักคิด_ป5_${new Date().toLocaleDateString('th-TH').replace(/\//g, '-')}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        // ลบรายการส่งงาน (สำหรับคุณครู)
+        window.deleteSubmission = async function(docId) {
+            if (!db || !currentUser || !docId) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'worksheet_submissions', docId));
+                // อัปเดตหน้าต่างตรวจงานทันที
+                setTimeout(() => {
+                    openTeacherDashboard();
+                }, 200);
+            } catch (error) {
+                console.error("ไม่สามารถลบรายการได้:", error);
+            }
+        };
+
+        // ฟังก์ชันคัดลอกข้อความสรุปคำตอบ
+        window.copySummary = function() {
+            const name = document.getElementById('studentName').value.trim();
+            const sClass = document.getElementById('studentClass').value.trim();
+            const sNo = document.getElementById('studentNo').value.trim();
+            const ans1 = document.getElementById('answer1').value.trim();
+            const ans2 = document.getElementById('answer2').value.trim();
+            const ans3 = document.getElementById('answer3').value.trim();
+
+            const plainText = `🧩 ใบงาน: ภารกิจนักคิด ป.5\n` +
+                `ชื่อ: ${name} | ห้อง: ${sClass || '-'} | เลขที่: ${sNo || '-'}\n` +
+                `------------------------\n` +
+                `🎒 ภารกิจที่ 1 (จัดกระเป๋า):\n${ans1}\n\n` +
+                `🥪 ภารกิจที่ 2 (ทำแซนด์วิช):\n${ans2}\n\n` +
+                `🌱 ภารกิจที่ 3 (ปลูกต้นไม้):\n${ans3}`;
+
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = plainText;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+
+            const feedback = document.getElementById('copyFeedback');
+            if (feedback) {
+                feedback.classList.remove('hidden');
+            }
+        };
+
+        // ฟังก์ชันยืนยันการล้างคำตอบ (ใช้ Modal แทน confirm())
+        window.confirmReset = function() {
+            const confirmHTML = `
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+                    <h3 class="font-mali font-bold text-xl text-slate-800 mb-2">ต้องการล้างคำตอบทั้งหมดใช่ไหม?</h3>
+                    <p class="text-slate-600 text-sm mb-5">ข้อความที่หนูพิมพ์ไว้ทั้งหมดจะถูกลบออก เพื่อเริ่มต้นทำใหม่นะจ๊ะ</p>
+                    <div class="flex gap-3">
+                        <button onclick="executeReset()" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-mali font-bold py-3 px-4 rounded-2xl transition cursor-pointer">
+                            ใช่, ล้างข้อมูลเลย
+                        </button>
+                        <button onclick="closeModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-mali font-bold py-3 px-4 rounded-2xl transition cursor-pointer">
+                            ยกเลิก
+                        </button>
+                    </div>
+                </div>
+            `;
+            openModal(confirmHTML, 'border-rose-300');
+        };
+
+        // ล้างค่าทั้งหมดจริง
+        window.executeReset = function() {
+            inputIds.forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            closeModal();
+        };
+    </script>
+</body>
+</html>
